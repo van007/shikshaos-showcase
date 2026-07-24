@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <title>ShikshaOS</title>
+  <rect width="32" height="32" rx="6" fill="#ff5d2e"/>
+  <text x="16" y="16" fill="#0a0b0d" font-family="Bricolage Grotesque, Helvetica, Arial, sans-serif"
+        font-size="19" font-weight="800" text-anchor="middle" dominant-baseline="central">S</text>
+</svg>

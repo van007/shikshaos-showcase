@@ -1,0 +1,305 @@
+/* ==================================================================== */
+/*  ShikshaOS Showcase — main stylesheet                                 */
+/*  Tokens, base, atmosphere and motion are copied verbatim from         */
+/*  design-language.html (§1–§4). Components reference tokens only.      */
+/* ==================================================================== */
+
+/* ==================================================================== */
+/*  1. DESIGN TOKENS                                                     */
+/* ==================================================================== */
+:root {
+  color-scheme: dark;
+
+  /* — Surfaces (darkest → lightest) — */
+  --canvas: #0a0b0d;        /* page background, recessed inputs */
+  --surface: #131419;       /* cards, panels, header */
+  --surface-2: #1b1c22;     /* code blocks, image wells, insets */
+
+  /* — Lines / borders — */
+  --line: rgba(255, 255, 255, 0.08);          /* default hairline */
+  --line-strong: rgba(255, 255, 255, 0.16);   /* dividers, ghost buttons, hover */
+
+  /* — Ink (text) — */
+  --ink: #f4f4f5;           /* headings, primary text, button labels */
+  --ink-muted: #9b9da6;     /* body copy, descriptions */
+  --ink-faint: #7a7c86;     /* captions, mono labels, disabled — 4.7:1 on canvas (AA) */
+
+  /* — Accent (the one spark) — */
+  --accent: #ff5d2e;        /* CTAs, links, sparks, the card square */
+  --accent-soft: #ff8b66;   /* primary-button hover (lighter in dark) */
+
+  /* — Atmosphere — */
+  --grid-line: rgba(255, 255, 255, 0.035);
+  --grain-opacity: 0.35;
+  --grain-blend: overlay;
+
+  /* — Misc surfaces — */
+  --skeleton: rgba(255, 255, 255, 0.055);
+  --scrollbar-thumb: #2c2d34;
+  --scrollbar-thumb-hover: #3c3d45;
+
+  /* — Type families — */
+  --font-display: "Bricolage Grotesque", "Geist", ui-sans-serif, sans-serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* — Motion (non-themed; constant across modes) — */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* the house easing */
+  --dur-fast: 0.2s;     /* hovers, color/border transitions */
+  --dur-mid: 0.3s;      /* arrow nudges, theme cross-fade */
+  --dur-reveal: 0.8s;   /* scroll-in reveal */
+
+  /* — Radii (non-themed) — */
+  --r-sm: 6px;     /* nav chips, logo tile, icon buttons (square) */
+  --r-md: 8px;     /* inputs, small wells */
+  --r-lg: 12px;    /* compact cards, code blocks */
+  --r-xl: 16px;    /* panels, large cards, dialog */
+  --r-pill: 999px; /* buttons, pills, tags, round icon buttons */
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --canvas: #f4f3ef;        /* warm cream, not white */
+  --surface: #ffffff;
+  --surface-2: #eceae3;
+  --line: rgba(20, 21, 24, 0.1);
+  --line-strong: rgba(20, 21, 24, 0.2);
+  --ink: #16171a;
+  --ink-muted: #565860;
+  --ink-faint: #6b6d75;     /* 4.7:1 on cream (AA) */
+  --accent: #c93c0d;        /* 4.8:1 on cream both ways — as text and as button fill */
+  --accent-soft: #a83109;   /* darker on hover in light mode */
+  --grid-line: rgba(20, 21, 24, 0.055);
+  --grain-opacity: 0.22;
+  --grain-blend: multiply;
+  --skeleton: rgba(20, 21, 24, 0.06);
+  --scrollbar-thumb: #cdccc4;
+  --scrollbar-thumb-hover: #b6b4aa;
+}
+
+/* ==================================================================== */
+/*  2. BASE                                                              */
+/* ==================================================================== */
+* { box-sizing: border-box; border-color: var(--line); }
+[hidden] { display: none !important; } /* .btn's display would otherwise win */
+html { scroll-behavior: smooth; background-color: var(--canvas); overflow-x: clip; }
+body {
+  margin: 0; background: transparent; color: var(--ink);
+  font-family: var(--font-sans); -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility; line-height: 1.6;
+}
+::selection { background: var(--accent); color: var(--canvas); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--canvas); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 999px; border: 2px solid var(--canvas); }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+
+/* ==================================================================== */
+/*  3. ATMOSPHERE — fixed decorative layers                              */
+/* ==================================================================== */
+.bg-grid {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 74px 74px;
+  -webkit-mask-image: radial-gradient(ellipse 78% 56% at 50% -6%, #000 8%, transparent 80%);
+  mask-image: radial-gradient(ellipse 78% 56% at 50% -6%, #000 8%, transparent 80%);
+}
+.bg-grain {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  opacity: var(--grain-opacity); mix-blend-mode: var(--grain-blend);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* ==================================================================== */
+/*  4. MOTION primitives                                                 */
+/* ==================================================================== */
+@keyframes fade-rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.rise { opacity: 0; animation: fade-rise 0.9s var(--ease-out-expo) both; }
+@keyframes skeleton-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.skeleton { background-color: var(--skeleton); animation: skeleton-pulse 2.6s ease-in-out infinite; border-radius: var(--r-md); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise { animation: none; opacity: 1; }
+  .skeleton { animation: none; }
+  /* Catch-all: every hover nudge, rotate and cross-fade lands on its end state. */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==================================================================== */
+/*  5. PAGE CHROME — header, nav, footer                                 */
+/* ==================================================================== */
+.skip { position: absolute; left: 0.75rem; top: -3rem; z-index: 60; border-radius: var(--r-pill); background: var(--accent); color: var(--canvas); padding: 0.625rem 1rem; font-size: 0.875rem; text-decoration: none; transition: top var(--dur-fast) var(--ease-out-expo); }
+.skip:focus-visible { top: 0.75rem; }
+
+.wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
+@media (min-width: 768px) { .wrap { padding: 0 2.5rem; } }
+
+.site-header { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(16px); background: color-mix(in srgb, var(--canvas) 85%, transparent); border-bottom: 1px solid var(--line); }
+.site-header-inner { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+@media (min-width: 768px) { .site-header-inner { padding: 0 2.5rem; } }
+
+.brand-lockup { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; }
+.logo-tile { display: grid; place-items: center; height: 32px; width: 32px; border-radius: var(--r-sm); background: var(--accent); font-family: var(--font-display); font-weight: 800; font-size: 14px; color: var(--canvas); transition: transform var(--dur-mid) var(--ease-out-expo); }
+.brand-lockup:hover .logo-tile { transform: rotate(-10deg); }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: -0.01em; }
+.brand-sub { font-size: 11px; color: var(--ink-faint); margin-top: 1px; }
+
+.nav { display: none; align-items: center; gap: 0.25rem; }
+/* 860, not 768: below this the six links + brand + toggle overflow the header row. */
+@media (min-width: 860px) { .nav { display: flex; } }
+.navlink { border-radius: var(--r-sm); padding: 0.5rem 0.75rem; text-decoration: none; font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-muted); transition: color var(--dur-fast); }
+.navlink:hover { color: var(--ink); }
+.navlink.active { color: var(--accent); }
+
+.icon-btn { display: grid; place-items: center; height: 40px; width: 40px; border-radius: var(--r-pill); border: 1px solid var(--line); background: transparent; color: var(--ink-muted); cursor: pointer; transition: border-color var(--dur-fast), color var(--dur-fast); }
+.icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+.theme-icon-moon { display: none; }
+[data-theme="light"] .theme-icon-sun { display: none; }
+[data-theme="light"] .theme-icon-moon { display: inline; }
+
+/* ==================================================================== */
+/*  6. SECTION ANATOMY + COMPONENTS  (verbatim from design-language §6)  */
+/* ==================================================================== */
+section.block { padding: 4.5rem 0; border-top: 1px solid var(--line); scroll-margin-top: 84px; }
+section.block:first-of-type { border-top: 0; }
+
+.eyebrow { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ink-faint); margin: 0 0 1.5rem; }
+.eyebrow .idx { color: var(--accent); }
+.eyebrow .rule { height: 1px; width: 40px; background: var(--line-strong); }
+
+h1.display { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; line-height: 1.04; font-size: clamp(2.5rem, 6vw, 3.75rem); margin: 0; }
+h2.display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.08; font-size: clamp(1.875rem, 4vw, 3rem); margin: 0 0 0.75rem; }
+.lede { color: var(--ink-muted); font-size: 1.0625rem; max-width: 44rem; margin: 0 0 1.5rem; }
+p.body { color: var(--ink-muted); max-width: 44rem; }
+.faint { color: var(--ink-faint); }
+
+.grid { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .cols-2, .cols-3, .cols-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .cols-3 { grid-template-columns: repeat(3, 1fr); } .cols-4 { grid-template-columns: repeat(4, 1fr); } }
+
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: var(--r-pill); padding: 0.875rem 1.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; cursor: pointer; border: 1px solid transparent; transition: background-color var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast); font-family: inherit; }
+.btn-primary { background: var(--accent); color: var(--canvas); }
+.btn-primary:hover { background: var(--accent-soft); }
+.btn-ghost { border-color: var(--line-strong); color: var(--ink); background: transparent; }
+.btn-ghost:hover { border-color: var(--ink); }
+.btn .arw { display: inline-block; transition: transform var(--dur-mid) var(--ease-out-expo); }
+.btn:hover .arw { transform: translateY(3px); }
+
+.pill { display: inline-block; border-radius: var(--r-pill); background: var(--accent); color: var(--canvas); padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; }
+.tag { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); padding: 0.25rem 0.75rem; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--ink-faint); }
+.dot { height: 6px; width: 6px; border-radius: var(--r-pill); background: var(--accent); display: inline-block; flex: none; }
+
+.card-lg { position: relative; display: flex; flex-direction: column; border-radius: var(--r-xl); border: 1px solid var(--line); background: var(--surface); padding: 1.5rem; transition: border-color var(--dur-fast); text-decoration: none; }
+.card-lg:hover { border-color: var(--line-strong); }
+.card-lg.dashed { border-style: dashed; border-color: var(--line-strong); }
+.card-lg.dashed:hover { border-color: var(--accent); }
+.well { display: grid; place-items: center; aspect-ratio: 16/10; width: 100%; overflow: hidden; border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface-2); transition: border-color var(--dur-fast); color: var(--ink-faint); }
+.card-lg:hover .well { border-color: var(--line-strong); }
+.card-lg .name { margin: 1.25rem 0 0; font-family: var(--font-display); font-weight: 600; font-size: 1.125rem; color: var(--ink); }
+.card-lg .cat { margin-top: 0.25rem; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint); }
+
+.ico { color: var(--ink-faint); }
+.well .ico { width: 62%; max-width: 260px; height: auto; }
+.ico .accent { color: var(--accent); }
+
+.impact { list-style: none; padding: 0; margin: 1rem 0 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.impact li { display: flex; gap: 0.625rem; font-size: 0.875rem; color: var(--ink-muted); }
+.impact li::before { content: ""; flex: none; margin-top: 8px; height: 4px; width: 4px; border-radius: var(--r-pill); background: var(--accent); }
+
+/* ==================================================================== */
+/*  7. PAGE-SPECIFIC — hero + reveal                                     */
+/* ==================================================================== */
+.hero { position: relative; padding: 5rem 0 4.5rem; }
+.hero-glow { position: absolute; top: -80px; right: -60px; height: 420px; width: 420px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--accent) 11%, transparent); filter: blur(90px); pointer-events: none; z-index: -1; }
+.hero h1.display { margin-top: 1.5rem; max-width: 16ch; }
+.hero h1 .spark { color: var(--accent); }
+.hero .lede { margin-top: 1.5rem; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 2rem; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2.5rem; }
+
+/* Hide reveal targets only when JS is running (script adds .has-reveal). */
+.has-reveal [data-reveal] > * { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .has-reveal [data-reveal] > * { opacity: 1; } }
+
+/* ==================================================================== */
+/*  8. PROOF — mock demo, steps, stat row                                */
+/* ==================================================================== */
+.panel { border-radius: var(--r-xl); border: 1px solid var(--line); background: var(--surface); padding: 1.5rem; }
+.card { border-radius: var(--r-lg); border: 1px solid var(--line); background: var(--surface); padding: 1.25rem; transition: border-color var(--dur-fast); }
+.card:hover { border-color: var(--line-strong); }
+.field-label { display: block; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-faint); margin-bottom: 0.5rem; }
+.meta-key { margin: 0; font-family: var(--font-mono); font-size: 11px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.18em; color: var(--accent); }
+.meta-val { margin-top: 0.5rem; font-size: 0.875rem; color: var(--ink-muted); }
+.btn-sm { padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; }
+.vh { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* — Mock demo theater — */
+.chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+button.tag { cursor: pointer; }
+button.tag .dot { background: var(--line-strong); transition: background-color var(--dur-fast); }
+button.tag[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+button.tag[aria-pressed="true"] .dot { background: var(--accent); }
+.demo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 1.5rem; }
+.demo-out:not(:empty) { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.demo-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; margin-bottom: 1.25rem; }
+.demo-head .t { font-family: var(--font-display); font-weight: 600; font-size: 1.0625rem; }
+.demo-note { margin: 1.25rem 0 0; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint); }
+.q + .q { border-top: 1px solid var(--line); padding-top: 1rem; margin-top: 1rem; }
+.q .qt { display: flex; gap: 0.625rem; font-size: 0.9375rem; }
+.q .qn { flex: none; font-family: var(--font-mono); font-size: 11px; color: var(--accent); padding-top: 0.2rem; }
+.q ol { list-style: none; margin: 0.625rem 0 0 1.75rem; padding: 0; display: grid; gap: 0.25rem; }
+.q li { display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--ink-muted); }
+.q li .k { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); }
+.show-ans .q li.right, .show-ans .q li.right .k { color: var(--accent); }
+.show-ans .q li.right::after { content: "✓"; font-family: var(--font-mono); font-size: 11px; }
+.sk-row { display: grid; gap: 0.5rem; }
+.sk { height: 12px; }
+
+/* — Product screenshots — */
+.shot { margin: 0; }
+.shot .frame { overflow: hidden; border-radius: var(--r-lg); border: 1px solid var(--line); background: var(--surface-2); aspect-ratio: 9/16; transition: border-color var(--dur-fast); }
+.shot:hover .frame { border-color: var(--line-strong); }
+.shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.shot figcaption { margin-top: 0.75rem; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-faint); }
+
+/* — Numbered steps — */
+.step .num { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; color: var(--accent); }
+.step h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.0625rem; margin: 0.625rem 0 0.5rem; }
+.step p { margin: 0; font-size: 0.875rem; color: var(--ink-muted); }
+
+/* — Stat row — */
+.stat { font-family: var(--font-display); font-weight: 700; font-size: 2.5rem; line-height: 1; letter-spacing: -0.02em; }
+.stat.txt { font-size: 1.625rem; padding-top: 0.6rem; }
+
+/* ==================================================================== */
+/*  9. SCHEMATIC DIAGRAMS                                                */
+/* ==================================================================== */
+.dgm-scroll { overflow-x: auto; }
+.dgm { display: block; width: 100%; min-width: 880px; height: auto; color: var(--ink-faint); }
+.dgm .node { fill: var(--surface-2); }
+.dgm .pane { fill: none; stroke-dasharray: 4 6; }
+.dgm text { stroke: none; fill: currentColor; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; }
+.dgm .t { fill: var(--ink); font-size: 11.5px; letter-spacing: 0.16em; }
+.dgm .accent { color: var(--accent); }
+.dgm .ck, .dgm .gate { fill: var(--surface-2); }
+.dgm-cap { margin-top: 1.5rem; }
+.dgm-foot { margin: 1.25rem 0 0; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint); }
+
+/* Draw-on: gated behind .has-reveal, so no-JS / reduced-motion renders complete. */
+.has-reveal .flow { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.has-reveal .revealed .flow { stroke-dashoffset: 0; transition: stroke-dashoffset 1.2s var(--ease-out-expo); }
+.has-reveal .ck, .has-reveal .gate { opacity: 0; }
+.has-reveal .revealed .ck, .has-reveal .revealed .gate { opacity: 1; transition: opacity 0.45s var(--ease-out-expo); }
+@media (prefers-reduced-motion: reduce) {
+  .has-reveal .flow { stroke-dashoffset: 0; }
+  .has-reveal .ck, .has-reveal .gate { opacity: 1; }
+}
+
+.site-footer { border-top: 1px solid var(--line); margin-top: 4rem; padding: 2.5rem 0; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
