@@ -191,6 +191,7 @@ p.body { color: var(--ink-muted); max-width: 44rem; }
 .btn-ghost:hover { border-color: var(--ink); }
 .btn .arw { display: inline-block; transition: transform var(--dur-mid) var(--ease-out-expo); }
 .btn:hover .arw { transform: translateY(3px); }
+.btn:hover .arw-out { transform: translate(3px, -3px); } /* outbound ↗ leans away, not down */
 
 .pill { display: inline-block; border-radius: var(--r-pill); background: var(--accent); color: var(--canvas); padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; }
 .tag { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); padding: 0.25rem 0.75rem; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--ink-faint); }

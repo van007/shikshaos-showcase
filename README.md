@@ -28,6 +28,10 @@ js/               theme toggle, scroll reveals, mock demo
 assets/           screenshots, social card
 ```
 
+## Contact
+
+Get in touch: https://varunnidhi.com/#contact
+
 ## License
 
 Content and design © ShikshaOS. All rights reserved. The ShikshaOS product itself is
