@@ -141,6 +141,8 @@ a { color: inherit; }
 .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
 @media (min-width: 768px) { .wrap { padding: 0 2.5rem; } }
 
+/* Sticky also makes this the containing block for .mobile-nav, so the open panel
+   overlays the page instead of growing the header and shoving content down. */
 .site-header { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(16px); background: color-mix(in srgb, var(--canvas) 85%, transparent); border-bottom: 1px solid var(--line); }
 .site-header-inner { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 @media (min-width: 768px) { .site-header-inner { padding: 0 2.5rem; } }
@@ -158,11 +160,47 @@ a { color: inherit; }
 .navlink:hover { color: var(--ink); }
 .navlink.active { color: var(--accent); }
 
+.header-actions { display: flex; align-items: center; gap: 0.5rem; }
+
 .icon-btn { display: grid; place-items: center; height: 40px; width: 40px; border-radius: var(--r-pill); border: 1px solid var(--line); background: transparent; color: var(--ink-muted); cursor: pointer; transition: border-color var(--dur-fast), color var(--dur-fast); }
 .icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
 .theme-icon-moon { display: none; }
 [data-theme="light"] .theme-icon-sun { display: none; }
 [data-theme="light"] .theme-icon-moon { display: inline; }
+
+/* — Mobile nav: hamburger + drop-down panel, the < 860px counterpart of .nav — */
+.nav-icon-close { display: none; }
+.site-header[data-nav-open] .nav-toggle { border-color: var(--line-strong); color: var(--ink); }
+.site-header[data-nav-open] .nav-icon-bars { display: none; }
+.site-header[data-nav-open] .nav-icon-close { display: inline; }
+
+.mobile-nav {
+  position: absolute; top: 100%; left: 0; right: 0;
+  display: grid; gap: 0.125rem;
+  padding: 0.5rem 1.5rem 1rem;
+  background: color-mix(in srgb, var(--canvas) 94%, transparent);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+  /* visibility keeps the closed panel out of the tab order and the a11y tree;
+     it flips instantly on open and waits out the fade on close. */
+  opacity: 0; transform: translateY(-0.5rem); visibility: hidden;
+  transition: opacity var(--dur-fast) var(--ease-out-expo),
+              transform var(--dur-fast) var(--ease-out-expo),
+              visibility 0s linear var(--dur-fast);
+}
+.site-header[data-nav-open] .mobile-nav {
+  opacity: 1; transform: none; visibility: visible;
+  transition: opacity var(--dur-fast) var(--ease-out-expo),
+              transform var(--dur-fast) var(--ease-out-expo),
+              visibility 0s;
+}
+@media (min-width: 768px) { .mobile-nav { padding: 0.5rem 2.5rem 1rem; } }
+/* Same 860px hand-off as .nav — above it the inline links take over. */
+@media (min-width: 860px) { .nav-toggle, .mobile-nav { display: none; } }
+
+.m-navlink { display: flex; align-items: center; min-height: 44px; border-radius: var(--r-sm); padding: 0 0.75rem; text-decoration: none; font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-muted); transition: color var(--dur-fast), background-color var(--dur-fast); }
+.m-navlink:hover, .m-navlink:focus-visible { color: var(--ink); background: var(--surface); }
+.m-navlink.active { color: var(--accent); }
 
 /* ==================================================================== */
 /*  6. SECTION ANATOMY + COMPONENTS  (verbatim from design-language §6)  */
