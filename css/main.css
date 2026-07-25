@@ -218,7 +218,13 @@ p.body { color: var(--ink-muted); max-width: 44rem; }
 /*  7. PAGE-SPECIFIC — hero + reveal                                     */
 /* ==================================================================== */
 .hero { position: relative; padding: 5rem 0 4.5rem; }
-.hero-glow { position: absolute; top: -80px; right: -60px; height: 420px; width: 420px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--accent) 11%, transparent); filter: blur(90px); pointer-events: none; z-index: -1; }
+.hero-glow { position: absolute; top: -80px; right: 0; height: 420px; width: 420px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--accent) 11%, transparent); filter: blur(90px); pointer-events: none; z-index: -1; }
+/* The glow may only bleed past the hero once the centred wrap has margin to
+   absorb it — that needs ~1192px of viewport, so 1280 leaves room for a
+   scrollbar. Any narrower and it widens the document and the page pans
+   sideways; html's overflow-x:clip doesn't save us, iOS Safari ignores clip
+   propagation from the root. */
+@media (min-width: 1280px) { .hero-glow { right: -60px; } }
 .hero h1.display { margin-top: 1.5rem; max-width: 16ch; }
 .hero h1 .spark { color: var(--accent); }
 .hero .lede { margin-top: 1.5rem; }
