@@ -309,4 +309,4 @@ button.tag[aria-pressed="true"] .dot { background: var(--accent); }
   .has-reveal .ck, .has-reveal .gate { opacity: 1; }
 }
 
-.site-footer { border-top: 1px solid var(--line); margin-top: 4rem; padding: 2.5rem 0; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.site-footer { border-top: 1px solid var(--line); margin-top: 4rem; padding: 2.5rem 0; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint); display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem 2rem; text-align: center; }
